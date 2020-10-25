@@ -11,7 +11,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '42db56c0-3f40-4336-a2fb-244998a62a21'
-  imageRepository: 'sknirwal12aspnetsampleapp'
+  imageRepository: 'sknirwal12aspnetcorewebapisample'
   containerRegistry: 'sapracontainerregistry.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -28,12 +28,23 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+   
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Login to ACR
+      inputs:
+       command: login
+       containerRegistry: $(dockerRegistryServiceConnection)
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: login
+        containerRegistry: $(dockerRegistryServiceConnection)
+    - task: Docker@2
+      displayName: Build and Push
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(tag)
+         $(tag)
+          
